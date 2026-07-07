@@ -1,0 +1,9 @@
+<svg width="220" height="48" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 34 h30" />
+    <path d="M9 34 C9 20, 27 20, 27 34 Z" />
+    <line x1="18" y1="20" x2="18" y2="14" />
+    <circle cx="18" cy="11" r="2.6" fill="#ffffff" stroke="none" />
+  </g>
+  <text x="46" y="33" font-family="Playfair Display, Georgia, serif" font-size="26" font-weight="600" fill="#ffffff">DineNow</text>
+</svg>
