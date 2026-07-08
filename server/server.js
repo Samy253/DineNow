@@ -4,7 +4,7 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 import express from "express"
 import cors from "cors"
 import connectDB from "./config/db.js";
-
+import authRouter from "./routes/auth.routes.js";
 
 
 const app = express()
@@ -20,6 +20,16 @@ const port = process.env.PORT || 3000
 
 app.get('/', (req,res) => {
     res.send('Server is live!')
+})
+app.use('/api/auth', authRouter)
+
+//global error handler
+app.use((error,req,res,next) => {
+    console.log("Unhandle Error : ",error)
+    res.status(500).json({
+        message : error.message || "Internal Server Error",
+        stack: process.env.NODE_ENV === "production" ? undefined : error.stack
+    })
 })
 
 app.listen(port, () => {
