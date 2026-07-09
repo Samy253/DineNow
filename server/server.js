@@ -5,6 +5,7 @@ import express from "express"
 import cors from "cors"
 import connectDB from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
+import restaurantRouter from "./routes/restaurant.routes.js";
 
 
 const app = express()
@@ -22,6 +23,7 @@ app.get('/', (req,res) => {
     res.send('Server is live!')
 })
 app.use('/api/auth', authRouter)
+app.use('/api/restaurant', restaurantRouter)
 
 //global error handler
 app.use((error,req,res,next) => {
