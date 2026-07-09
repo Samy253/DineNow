@@ -178,7 +178,7 @@ const seedData = async () => {
             exclusive: true,
             
         }
-        ];
+    ];
 
         console.log("Inserting restaurants...")
         const updatedRestaurantsData = restaurantsData.map((restaurant, idx) => {

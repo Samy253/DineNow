@@ -5,8 +5,6 @@ import { Booking } from "../models/Booking.model.js"
 //get all restaurants for admin management
 //GET /api/admin/restaurants
 
-
-
 export const getAllRestaurants = async (req,res) => {
     try {
         const restaurant = (await Restaurant.find({}).populate("owner", "name email phone")).toSorted({createdAt : -1})

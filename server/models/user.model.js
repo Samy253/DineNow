@@ -31,12 +31,6 @@ const userSchema = new mongoose.Schema({
     }
 },{timestamps: true})
 
-//hash password before saving to db
-userSchema.pre("save", async function (next) {
-    if(this.isModified("password"))
-        this.password = await bcrypt.hash(this.password,10)
-    
-})
 
 //remove password when converting to JSON
 userSchema.set("toJSON", {
