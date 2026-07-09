@@ -6,6 +6,7 @@ import cors from "cors"
 import connectDB from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import restaurantRouter from "./routes/restaurant.routes.js";
+import bookingRouter from "./routes/booking.routes.js";
 
 
 const app = express()
@@ -24,6 +25,7 @@ app.get('/', (req,res) => {
 })
 app.use('/api/auth', authRouter)
 app.use('/api/restaurant', restaurantRouter)
+app.use('/api/bookings', bookingRouter)
 
 //global error handler
 app.use((error,req,res,next) => {
