@@ -1,7 +1,7 @@
-import mongoose, { ModifiedPathsSnapshot } from "mongoose";
-import { User } from "./user.model";
-import { Restaurant } from "./restaurant.model";
-import {crypto} from "crypto"
+import mongoose from "mongoose";
+import { User } from "./user.model.js";
+import { Restaurant } from "./restaurant.model.js";
+import crypto from "crypto"
 
 const bookingSchema = new mongoose.Schema({
     user : {type : mongoose.Schema.Types.ObjectId, ref : "User", required : true},
@@ -11,7 +11,7 @@ const bookingSchema = new mongoose.Schema({
     guests : {type : Number, required : true, min : 1},
     occassion : {type : String, trim : true},
     specialRequests : {type : String, trim : true},
-    status : {type : String, enum : ["confirmed", "cancelled", "completed"], default : confirmed},
+    status : {type : String, enum : ["confirmed", "cancelled", "completed"], default : "confirmed"},
     bookingId : {type : String, unique : true}
 },{timestamps : true})
 

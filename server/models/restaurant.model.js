@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import { User } from "./user.model.js";
 
 const restaurantSchema = new mongoose.Schema({
     name: {
@@ -74,7 +75,7 @@ const restaurantSchema = new mongoose.Schema({
     status : {
         type : String,
         enum : ['pending','approved','rejected'],
-        defualt : pending
+        defualt : "pending"
     },
     totalSeats : {
         type : Number,
