@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
-import { Restaurant } from "../models/restaurant.model"
-import { User } from "../models/user.model"
-import { Booking } from "../models/Booking.model"
+import { Restaurant } from "../models/restaurant.model.js"
+import { User } from "../models/user.model.js"
+import { Booking } from "../models/Booking.model.js"
 
 //get all restaurants with search and filters
 //GET /api/restaurants
