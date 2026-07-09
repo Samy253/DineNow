@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { dummyUser } from "../assets/assets.js";
+import api from "../lib/api.js";
+import toast from "react-hot-toast"
 
 const AppContext = createContext(null);
 
@@ -10,34 +11,60 @@ export const AppContextProvider = ({ children }) => {
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
     const login = async (email, password) => {
-        console.log(email, password);
-        setToken(dummyUser.token);
-        setUser(dummyUser);
-        setToken(dummyUser.token);
-        localStorage.setItem("token", dummyUser.token);
-        return true;
+        try {
+            setLoading(true)
+            const res = await api.post("/auth/login", {email, password})
+            const {token : userToken, ...userData} = res.data
+
+            localStorage.setItem("token", userToken)
+            setToken(userToken)
+            setUser(userData)
+            toast.success(`Welcome back ${userData.name}`)
+            return true
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error?.message)
+            return false
+        }finally{
+            setLoading(false)
+        }
     };
 
     const register = async (name, email, password, phone, role) => {
-        console.log(name, email, password, phone, role);
-        setToken(dummyUser.token);
-        setUser(dummyUser);
-        setToken(dummyUser.token);
-        localStorage.setItem("token", dummyUser.token);
-        return true;
+        try {
+            setLoading(true)
+            const res = await api.post("/auth/register", {name, email, password, phone, role})
+            const {token : userToken, ...userData} = res.data
+
+            localStorage.setItem("token", userToken)
+            setToken(userToken)
+            setUser(userData)
+            toast.success(`Welcome to DineNow`)
+            return true
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error?.message)
+            return false
+        }finally{
+            setLoading(false)
+        }
     };
 
     const logout = () => {
         localStorage.removeItem("token");
         setToken(null);
         setUser(null);
-        window.location.href = "/";
+        window.location.href = "/"; //set the current url to /, basically reloading the page and go to home page
     };
 
     useEffect(() => {
         const loadUser = async () => {
             if (token) {
-                setUser(dummyUser);
+                try {
+                    const res = await api.get('/auth/me')
+                    setUser(res.data)
+                } catch (error) {
+                    toast.error(error?.response?.data?.message || error?.message)
+                    logout()
+                }
             }
             setLoading(false);
         };
