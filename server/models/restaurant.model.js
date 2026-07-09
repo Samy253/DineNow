@@ -19,11 +19,11 @@ const restaurantSchema = new mongoose.Schema({
         required : true,
         
     },
-    cuisine : {
+    cuisine : [{
         type : String,
         required : true,
         trim : true
-    },
+    }],
     priceRange : {
         type : String,
         required : true,
@@ -67,7 +67,7 @@ const restaurantSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
-    Owner : {
+    owner : {
         type : mongoose.Schema.Types.ObjectId,
         ref: User,
         required : true
