@@ -32,14 +32,14 @@ export const protect = async(req, res, next) => {
 }
 
 //middlewares for admin and restaurant owners
-export const adminOnly = (req,res) => {
+export const adminOnly = (req,res, next) => {
     if(req.user && req.user.role === "admin")
         next()
     else res.status(400).json({message : "Access Denied, Admin Only"})
 }
 //admin can also access owner dashboard
-export const ownersOnly = (req,res) => {
-    if(req.user && req.user.role === "owner" || req.user.role === "admin")
+export const ownersOnly = (req,res, next) => {
+    if(req.user && (req.user.role === "owner" || req.user.role === "admin"))
         next()
     else res.status(400).json({message : "Access Denied, Owner role required"})
 }

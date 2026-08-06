@@ -1,17 +1,33 @@
+import fs from "fs"
+import os from "os"
+import path from "path"
+
 import { Booking } from "../models/Booking.model.js"
 import { Restaurant } from "../models/restaurant.model.js"
-import {v2 as cloudinary} from "cloudinary"
+import cloudinary from "../config/cloudinary.js";
 
 //helper function to upload buffer to Cloudinary
-const uploadToCloudinary =(fileBuffer) => {
-    return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream({folder : "DineNow"}, (error,result) => {
-            if(error) return reject(error)
-            if(!result) return reject(new Error("Upload failed"))
-            resolve({secure_url : result.secure_url})
-        })
-        stream.end(fileBuffer)
-    })
+// const uploadToCloudinary =(fileBuffer) => {
+//     return new Promise((resolve, reject) => {
+//         const stream = cloudinary.uploader.upload_stream({folder : "DineNow"}, (error,result) => {
+//             if(error) return reject(error)
+//             if(!result) return reject(new Error("Upload failed"))
+//             resolve({secure_url : result.secure_url})
+//         })
+//         stream.end(fileBuffer)
+//     })
+// }
+
+const uploadToCloudinary = async (fileBuffer, originalName = "upload") => {
+    const tempPath = path.join(os.tmpdir(), `${Date.now()}-${originalName}`)
+    try {
+        fs.writeFileSync(tempPath, fileBuffer)
+        const result = await cloudinary.uploader.upload(tempPath, { folder: "DineNow" })
+        return { secure_url: result.secure_url }
+    } finally {
+        //clean up temp file regardless of success/failure
+        fs.unlink(tempPath, () => {})
+    }
 }
 
 //get owner's restaurant
@@ -58,7 +74,8 @@ export const createOwnerRestaurant = async (req,res) => {
         //handle image 
         let imageUrl = ""
         if(req.file){
-            const result = await uploadToCloudinary(req.file.buffer)
+            //const result = await uploadToCloudinary(req.file.buffer)
+            const result = await uploadToCloudinary(req.file.buffer, req.file.originalname)
             imageUrl = result.secure_url
         }
 
@@ -118,7 +135,8 @@ export const updateOwnerRestaurant = async (req,res) => {
         //handle new image upload if any
         let imageUrl = ""
         if(req.file){
-            const result = await uploadToCloudinary(req.file.buffer)
+            //const result = await uploadToCloudinary(req.file.buffer)
+            const result = await uploadToCloudinary(req.file.buffer, req.file.originalname)
             restaurant.image = result.secure_url
         }
 
@@ -137,11 +155,11 @@ export const getOwnerBookings = async (req,res) => {
     try {
         const restaurant = await Restaurant.findOne({owner : req.user?._id})
         if(!restaurant){
-            res.status(404).jsonn({message : "Restaurant not found"})
+            res.status(404).json({message : "Restaurant not found"})
             return
         }
 
-        const bookings = (await Booking.find({restaurant : restaurant._id}).populate("user", "name email phone")).sort({date : -1, time : -1})
+        const bookings = await Booking.find({restaurant : restaurant._id}).populate("user", "name email phone").sort({date : -1, time : -1})
 
         res.json(bookings)
     } catch (error) {

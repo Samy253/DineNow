@@ -1,10 +1,14 @@
 import { Calendar, Users, Clock } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../../lib/api";
 
 export default function OwnerBookings({ bookings, setBookings, totalSeats }) {
     const handleUpdateBookingStatus = async (bookingId, newStatus) => {
         try {
-            setBookings((prev) => prev.map((b) => (b._id === bookingId ? { ...b, status: newStatus } : b)));
+            
+            await api.put(`/owner/bookings/${bookingId}/status`, {status:newStatus})
+            setBookings((prev)=>prev.map((b)=>(b._id === bookingId? {...b, status:newStatus} : b)))
+
             toast.success(`Booking status updated to ${newStatus}`);
         } catch (error) {
             toast.error(error?.response?.data?.message || "Update status failed");
