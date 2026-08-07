@@ -9,7 +9,7 @@ import Loader from "../components/Loader.jsx";
 import BookingSuccess from "../components/booking/BookingSuccess.jsx";
 import BookingSummary from "../components/booking/BookingSummary.jsx";
 import BookingForm from "../components/booking/BookingForm.jsx";
-import { dummyBookingData, dummyRestaurant } from "../assets/assets.js";
+import api from "../lib/api.js";
 
 export default function BookingConfirmation() {
     const { slug } = useParams();
@@ -47,8 +47,16 @@ export default function BookingConfirmation() {
 
     useEffect(() => {
         const fetchRestaurant = async () => {
-            setRestaurant(dummyRestaurant.find((r) => r.slug === slug));
-            setLoading(false);
+            try {
+                setLoading(true)
+                const res = await api.get(`/restaurants/${slug}`)
+                setRestaurant(res.data)
+            } catch (error) {
+                toast.error(error?.response?.data?.message || error?.message)
+                navigate('/')
+            } finally {
+                setLoading(false)
+            }
         };
 
         if (slug) {
@@ -72,7 +80,8 @@ export default function BookingConfirmation() {
 
         try {
             setConfirming(true);
-            setConfirmedBooking(dummyBookingData);
+            const res = await api.post('/bookings', {restaurantId : restaurant._id, date, time : slot, guests, occasion, specialRequests})
+            setConfirmedBooking(res.data)
             toast.success("Reservation confirmed!");
         } catch (error) {
             toast.error(error?.response?.data?.message || error?.message);

@@ -7,7 +7,8 @@ import RestaurantCard from "../components/RestaurantCard.jsx";
 import AuthModal from "../components/AuthModal.jsx";
 import { CalendarIcon, UsersIcon, ClockIcon, MapPinIcon, CalendarDaysIcon } from "lucide-react";
 import toast from "react-hot-toast";
-import { dummyFeaturedRestaurants, dummyMyBookingsData } from "../assets/assets.js";
+
+import api from "../lib/api.js";
 
 export default function Dashboard() {
     const { user } = useAppContext();
@@ -19,8 +20,15 @@ export default function Dashboard() {
     // Fetch user bookings
     useEffect(() => {
         const fetchBookings = async () => {
-            setBookings(dummyMyBookingsData);
-            setLoadingBookings(false);
+            try {
+                setLoadingBookings(true)
+                const res = await api.get('/bookings/my')
+                setBookings(res.data)
+            } catch (error) {
+                toast.error(error?.response?.data?.message || error?.message)
+            }finally{
+                setLoadingBookings(false)
+            }
         };
 
         if (user) {
@@ -31,7 +39,13 @@ export default function Dashboard() {
     // Fetch generic recommendations
     useEffect(() => {
         const fetchRecommendations = async () => {
-            setRecommendations(dummyFeaturedRestaurants);
+            try {
+                const res = await api.get('/restaurants/featured')
+                setRecommendations(res.data)
+            } catch (error) {
+                toast.error(error?.response?.data?.message || error?.message)
+            }
+            
         };
         fetchRecommendations();
     }, []);
@@ -42,7 +56,9 @@ export default function Dashboard() {
         }
 
         try {
-            setBookings((prev) => prev.map((b) => (b._id === bookingId ? { ...b, status: "cancelled" } : b)));
+            await api.put(`/bookings/${bookingId}/cancel`)
+            //update local state
+            setBookings((prev) => prev.map((b) => (b._id === bookingId ? {...b,status : "cancelled"} : b)))
             toast.success("Reservation cancelled successfully.");
         } catch (error) {
             toast.error(error?.response?.data?.message || error?.message);

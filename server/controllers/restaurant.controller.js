@@ -104,6 +104,9 @@ export const getRestaurantsBySlug = async (req,res) => {
 //get dynamic seat availability for slots
 //GET /api/restaurants/:id/availability
 export const getRestaurantAvailability = async (req,res) => {
+    console.log("Availability route hit");
+    console.log(req.params);
+    console.log(req.query);
     try {
         const {date} = req.query
         if(!date){
@@ -116,7 +119,7 @@ export const getRestaurantAvailability = async (req,res) => {
             return
         }
 
-        const bookingDate = new Date(date).toString
+        const bookingDate = new Date(date).toString()
 
         //get all active bookings on this date for the restaurant
         const bookings = await Booking.find({

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Utensils, Upload, Image } from "lucide-react";
 import toast from "react-hot-toast";
-import { dummyRestaurant } from "../../assets/assets.js";
+
+import api from "../../lib/api.js";
 
 export default function RestaurantWizard({ setRestaurant }) {
     const [name, setName] = useState("");
@@ -80,7 +81,13 @@ export default function RestaurantWizard({ setRestaurant }) {
                 formData.append("image", imageFile);
             }
 
-            setRestaurant(dummyRestaurant[0]);
+            const res=await api.post("/owner/restaurant",formData, {
+                headers: {
+                    "Content-Type" : "multipart/form-data",
+                }
+            });
+
+            setRestaurant(res.data);
             toast.success("Restaurant profile submitted successfully! Awaiting Admin approval.");
         } catch (error) {
             toast.error(error?.response?.data?.message || "Failed to register restaurant");

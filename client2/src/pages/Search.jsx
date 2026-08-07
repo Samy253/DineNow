@@ -5,9 +5,11 @@ import Footer from "../components/Footer.jsx";
 import RestaurantCard from "../components/RestaurantCard.jsx";
 import AuthModal from "../components/AuthModal.jsx";
 import { SlidersHorizontal, Search as SearchIcon, X, Check, MapPin, SearchXIcon } from "lucide-react";
-import { dummyRestaurant } from "../assets/assets.js";
+import api from "../lib/api.js";
+import toast from "react-hot-toast";
 
 export default function Search() {
+    console.log("MY SEARCH FILE IS RUNNING");
     const [searchParams, setSearchParams] = useSearchParams();
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,8 +38,16 @@ export default function Search() {
 
     useEffect(() => {
         const fetchRestaurants = async () => {
-            setRestaurants(dummyRestaurant);
-            setLoading(false);
+            try {
+                setLoading(true)
+                //const query string directly from searchParams
+                const res = await api.get(`/restaurants?${searchParams.toString()}`)
+                setRestaurants(res.data)
+            } catch (error) {
+                toast.error(error?.response?.message || error?.message)
+            } finally{
+                setLoading(false)
+            }
         };
 
         fetchRestaurants();

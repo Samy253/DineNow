@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Upload, Image } from "lucide-react";
-import { dummyRestaurant } from "../../assets/assets.js";
+import api from "../../lib/api";
 
 export default function OwnerProfileDetails({ restaurant, setRestaurant }) {
     const [name, setName] = useState("");
@@ -87,7 +87,13 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }) {
             if (imageFile) {
                 formData.append("image", imageFile);
             }
-            setRestaurant(dummyRestaurant[0]);
+            const res = await api.put("/owner/restaurant", formData, {
+                headers : {
+                    "Content-Type" : "multipart/form-data"
+                }
+            })
+            setRestaurant(res.data)
+
             toast.success("Profile details updated successfully!");
         } catch (error) {
             toast.error(error?.response?.data?.message || "Update failed");

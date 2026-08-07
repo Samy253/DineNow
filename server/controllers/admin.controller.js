@@ -7,7 +7,7 @@ import { Booking } from "../models/Booking.model.js"
 
 export const getAllRestaurants = async (req,res) => {
     try {
-        const restaurant = (await Restaurant.find({}).populate("owner", "name email phone")).toSorted({createdAt : -1})
+        const restaurant = await Restaurant.find({}).populate("owner", "name email phone").sort({createdAt : -1})
 
         res.json(restaurant)
     } catch (error) {
@@ -34,6 +34,7 @@ export const approveRestaurant = async (req,res) => {
 
         restaurant.status = status
         await restaurant.save()
+        res.json({ message: "Restaurant status updated", restaurant })
 
     } catch (error) {
         console.error(error)
@@ -45,13 +46,13 @@ export const approveRestaurant = async (req,res) => {
 // GET /api/admin/stats
 export const getAdminStats = async (req,res) => {
     try {
-        const totalUsers = await User.countDocuments({role: " customer "})
+        const totalUsers = await User.countDocuments({role: "customer"})
         const totalOwners = await User.countDocuments({role : "owner"})
         const totalBookings = await Booking.countDocuments({})
         const totalRestaurants = await Restaurant.countDocuments({})
 
         //get latest 10 bookings
-        const latestBookings = (await Booking.find({}).populate("user", "name email").populate("restaurant","name")).toSorted({createdAt: -1}).limit(10)
+        const latestBookings = await Booking.find({}).populate("user", "name email").populate("restaurant","name").sort({createdAt: -1}).limit(10)
 
         res.json({
             users : {
